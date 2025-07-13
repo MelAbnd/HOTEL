@@ -7,7 +7,6 @@ Autor: GitHub Copilot - Julio 2025
 """
 
 import time
-import time
 import os
 from datetime import datetime
 from selenium import webdriver
@@ -18,6 +17,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+# Configuraciones externas para facilitar ajustes
+from config import (
+    BASE_URL,
+    LOGOUT_URL,
+    CREDENTIALS,
+    EDGE_CONFIG,
+    SCREENSHOT_CONFIG,
+    TIMEOUTS,
+    RESPONSIVE_RESOLUTIONS,
+)
+
 class HotelPremiumTest:
     """🏨 Pruebas Básicas para Hotel Premium - Fácil de Entender"""
     
@@ -25,14 +35,17 @@ class HotelPremiumTest:
         """Configuración inicial"""
         print("🔧 Iniciando configuración de pruebas...")
         
-        # Configuración básica
-        self.url_hotel = "http://localhost/hotel_premium/"
-        self.usuario = "admin"
-        self.password = "admin2018"
+        # Configuración básica tomada de config.py
+        self.url_hotel = BASE_URL
+        self.logout_url = LOGOUT_URL
+        cred = CREDENTIALS.get("admin", {})
+        self.usuario = cred.get("username", "admin")
+        self.password = cred.get("password", "admin2018")
         self.resultados = []
         
         # Crear carpeta para capturas
-        os.makedirs('screenshots', exist_ok=True)
+        self.screenshot_dir = SCREENSHOT_CONFIG.get("directory", "screenshots/")
+        os.makedirs(self.screenshot_dir, exist_ok=True)
         
         # Configurar navegador Edge
         self.configurar_navegador()
@@ -47,10 +60,7 @@ class HotelPremiumTest:
         
         try:
             # Rutas donde puede estar EdgeDriver
-            rutas_posibles = [
-                "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedgedriver.exe",
-                "msedgedriver.exe"
-            ]
+            rutas_posibles = [EDGE_CONFIG.get("driver_path"), "msedgedriver.exe"]
             
             driver_encontrado = False
             for ruta in rutas_posibles:
@@ -65,8 +75,10 @@ class HotelPremiumTest:
                 self.navegador = webdriver.Edge(options=opciones_edge)
             
             # Configurar tiempos de espera
-            self.navegador.implicitly_wait(10)
-            self.esperar = WebDriverWait(self.navegador, 15)
+            self.navegador.implicitly_wait(TIMEOUTS.get("implicit_wait", 10))
+            self.esperar = WebDriverWait(
+                self.navegador, TIMEOUTS.get("explicit_wait", 15)
+            )
             
             print("✅ Edge configurado correctamente")
             
@@ -94,7 +106,9 @@ class HotelPremiumTest:
             resultado = "❌ FALLÓ"
             print(f"❌ {nombre} falló: {error}")
             # Capturar imagen del error
-            nombre_archivo = f"screenshots/error_{nombre.replace(' ', '_')}.png"
+            nombre_archivo = os.path.join(
+                self.screenshot_dir, f"error_{nombre.replace(' ', '_')}.png"
+            )
             self.navegador.save_screenshot(nombre_archivo)
             print(f"📸 Captura guardada: {nombre_archivo}")
         
@@ -286,10 +300,9 @@ class HotelPremiumTest:
         self.hacer_login_si_necesario()
         
         # Diferentes tamaños de pantalla
+        # Resoluciones definidas en config.py
         tamaños = [
-            (1920, 1080, "Desktop"),
-            (768, 1024, "Tablet"),
-            (375, 667, "Móvil")
+            (r["width"], r["height"], r["name"]) for r in RESPONSIVE_RESOLUTIONS
         ]
         
         for ancho, alto, dispositivo in tamaños:
@@ -347,7 +360,7 @@ class HotelPremiumTest:
             # Estrategia 2: Si no encontramos enlace, navegar directamente
             if not logout_encontrado:
                 print("   🔄 Navegando directamente a logout.php...")
-                self.navegador.get("http://localhost/hotel_premium/logout.php")
+                self.navegador.get(self.logout_url)
                 logout_encontrado = True
                 print("   ✅ Logout manual ejecutado")
             
@@ -472,7 +485,7 @@ class HotelPremiumTest:
         # Generar reporte final
         exitosas, total = self.generar_reporte_simple()
         
-        print("\n📁 Capturas de pantalla guardadas en: screenshots/")
+        print(f"\n📁 Capturas de pantalla guardadas en: {self.screenshot_dir}")
         
         # Cerrar navegador
         print("\n🔚 Cerrando navegador...")
@@ -490,7 +503,7 @@ def main():
         print("🔍 Verificando servidor local...")
         try:
             import requests
-            response = requests.get("http://localhost/hotel_premium/", timeout=5)
+            response = requests.get(BASE_URL, timeout=5)
             print("✅ XAMPP funcionando correctamente")
         except:
             print("❌ Error: XAMPP no está funcionando")
