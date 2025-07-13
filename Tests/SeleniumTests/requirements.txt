@@ -1,0 +1,10 @@
+# Requerimientos para las Pruebas Automatizadas del Sistema Hotel Premium
+# 
+# Para instalar estas dependencias, ejecuta:
+# pip install -r requirements.txt
+
+selenium==4.15.2
+webdriver-manager==4.0.1
+unittest-xml-reporting==3.2.0
+pillow==10.0.1
+requests==2.31.0

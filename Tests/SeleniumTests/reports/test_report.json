@@ -1,0 +1,57 @@
+{
+  "project": "Hotel Premium",
+  "browser": "Microsoft Edge 138.0.3351.83",
+  "start_time": "2025-07-12T21:37:43.838485",
+  "end_time": "2025-07-12T21:39:10.036384",
+  "total_duration": "0:01:26.197899",
+  "summary": {
+    "total_tests": 7,
+    "passed": 5,
+    "failed": 2,
+    "success_rate": 71.4
+  },
+  "results": [
+    {
+      "test": "Carga de Página Principal",
+      "status": "FAILED",
+      "duration": 0.71,
+      "timestamp": "2025-07-12T21:37:44.545682"
+    },
+    {
+      "test": "Funcionalidad de Login",
+      "status": "PASSED",
+      "duration": 2.89,
+      "timestamp": "2025-07-12T21:37:47.440600"
+    },
+    {
+      "test": "Navegación Básica",
+      "status": "PASSED",
+      "duration": 3.95,
+      "timestamp": "2025-07-12T21:37:51.389317"
+    },
+    {
+      "test": "Diseño Responsivo",
+      "status": "FAILED",
+      "duration": 21.67,
+      "timestamp": "2025-07-12T21:38:13.063684"
+    },
+    {
+      "test": "Formularios",
+      "status": "PASSED",
+      "duration": 21.44,
+      "timestamp": "2025-07-12T21:38:34.507698"
+    },
+    {
+      "test": "Funcionalidad de Logout",
+      "status": "PASSED",
+      "duration": 21.31,
+      "timestamp": "2025-07-12T21:38:55.819964"
+    },
+    {
+      "test": "Seguridad Básica",
+      "status": "PASSED",
+      "duration": 14.22,
+      "timestamp": "2025-07-12T21:39:10.036384"
+    }
+  ]
+}
