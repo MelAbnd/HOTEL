@@ -133,12 +133,17 @@ class HotelPremiumTest:
         self.navegador.get(self.url_hotel)
         
         # Verificar que aparezcan los campos de login
+        # Esperar a que los elementos estén visibles
         campo_usuario = self.esperar.until(
-            EC.presence_of_element_located((By.ID, "exampleInputEmail1"))
+            EC.visibility_of_element_located((By.ID, "exampleInputEmail1"))
         )
-        campo_password = self.navegador.find_element(By.ID, "exampleInputPassword1")
-        boton_login = self.navegador.find_element(By.XPATH, "//button[@type='submit']")
-        
+        campo_password = self.esperar.until(
+            EC.visibility_of_element_located((By.ID, "exampleInputPassword1"))
+        )
+        boton_login = self.esperar.until(
+            EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
+        )
+
         # Verificar que los elementos estén visibles
         assert campo_usuario.is_displayed(), "❌ Campo usuario no visible"
         assert campo_password.is_displayed(), "❌ Campo password no visible"
@@ -249,8 +254,17 @@ class HotelPremiumTest:
         # Intentar login
         boton_login = self.navegador.find_element(By.XPATH, "//button[@type='submit']")
         boton_login.click()
-        time.sleep(3)
-        
+
+        # Manejar alerta de credenciales incorrectas
+        try:
+            WebDriverWait(self.navegador, 5).until(EC.alert_is_present())
+            alerta = self.navegador.switch_to.alert
+            alerta.accept()
+        except TimeoutException:
+            pass
+
+        time.sleep(2)
+
         # Verificar que NO nos deja entrar
         url_actual = self.navegador.current_url
         if "view=reserva" not in url_actual:
@@ -401,9 +415,11 @@ class HotelPremiumTest:
             
             # Login
             campo_usuario = self.esperar.until(
-                EC.element_to_be_clickable((By.ID, "exampleInputEmail1"))
+                EC.visibility_of_element_located((By.ID, "exampleInputEmail1"))
             )
-            campo_password = self.navegador.find_element(By.ID, "exampleInputPassword1")
+            campo_password = self.esperar.until(
+                EC.visibility_of_element_located((By.ID, "exampleInputPassword1"))
+            )
             
             campo_usuario.clear()
             campo_usuario.send_keys(self.usuario)
